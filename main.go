@@ -69,7 +69,8 @@ func RootCmd() *cobra.Command {
 				return err
 			}
 
-			for _, crd := range crds {
+			for index, crd := range crds {
+				fmt.Println(index)
 				err = builder.Add(crd)
 				if err != nil {
 					return err
