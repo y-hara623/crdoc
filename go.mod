@@ -1,4 +1,4 @@
-module fybrik.io/crdoc
+module github.com/y-hara623/crdoc
 
 go 1.19
 
