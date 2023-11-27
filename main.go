@@ -7,6 +7,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -61,25 +62,28 @@ func RootCmd() *cobra.Command {
 				return err
 			}
 
-			builder := pkg.NewModelBuilder(model, tocOptionValue != "",
-				templateOptionValue, outputOptionValue, builtinTemplates)
-
 			crds, err := pkg.LoadCRDs(resourcesOptionValue)
 			if err != nil {
 				return err
 			}
 
+			// create dirs if needed
+			err = os.MkdirAll(filepath.Dir(outputOptionValue), os.ModePerm)
+			if err != nil {
+				return err
+			}
+
 			for index, crd := range crds {
-				fmt.Println(index)
+				builder := pkg.NewModelBuilder(model, tocOptionValue != "",
+					templateOptionValue, outputOptionValue, builtinTemplates)
 				err = builder.Add(crd)
 				if err != nil {
 					return err
 				}
-			}
-
-			err = builder.Output()
-			if err != nil {
-				return err
+				err = builder.Output(crd.Spec.Group)
+				if err != nil {
+					return err
+				}
 			}
 
 			return nil

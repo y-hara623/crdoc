@@ -97,16 +97,10 @@ func (b *ModelBuilder) Add(crd *apiextensions.CustomResourceDefinition) error {
 }
 
 // Output writes markdown to the output direcory
-func (b *ModelBuilder) Output() error {
-	outputFilepath := filepath.Clean(b.OutputFilepath)
+func (b *ModelBuilder) Output(fileName string) error {
+	outputFilepath := filepath.Clean(filepath.Join(b.OutputFilepath, fileName))
 
-	// create dirs if needed
-	err := os.MkdirAll(filepath.Dir(outputFilepath), os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	// create the file
+	// create the directory
 	f, err := os.Create(outputFilepath)
 	if err != nil {
 		return err
