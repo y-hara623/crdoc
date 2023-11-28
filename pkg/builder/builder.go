@@ -100,7 +100,7 @@ func (b *ModelBuilder) Add(crd *apiextensions.CustomResourceDefinition) error {
 func (b *ModelBuilder) Output(group string) error {
 	outputFilepath := filepath.Clean(filepath.Join(b.OutputFilepath, strings.Replace(group, ".", "-", -1)+".md"))
 
-	os.MkdirAll(outputFilepath, 0755)
+	os.MkdirAll(filepath.Dir(outputFilepath), 0755)
 	// create the directory
 	f, err := os.Create(outputFilepath)
 	if err != nil {
