@@ -98,7 +98,7 @@ func (b *ModelBuilder) Add(crd *apiextensions.CustomResourceDefinition) error {
 
 // Output writes markdown to the output direcory
 func (b *ModelBuilder) Output(fileName string) error {
-	fmt.Printf("Output\n")
+	fmt.Printf("Output: ")
 	outputFilepath := filepath.Clean(filepath.Join(b.OutputFilepath, fileName))
 	fmt.Printf(outputFilepath)
 
