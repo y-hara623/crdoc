@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -73,16 +74,27 @@ func RootCmd() *cobra.Command {
 				return err
 			}
 
-			builder := pkg.NewModelBuilder(model, tocOptionValue != "",
-				templateOptionValue, outputOptionValue, builtinTemplates)
+			sort.Slice(crds, func(i, j int) bool {
+				return crds[i].Spec.Group < crds[j].Spec.Group
+			})
+
+			builders := make(map[string]*pkg.ModelBuilder)
 			for _, crd := range crds {
-				err = builder.Add(crd)
+				group := crd.Spec.Group
+				if builders[group] == nil {
+					output := filepath.Clean(filepath.Join(b.OutputFilepath, strings.Replace(group, ".", "-", -1)+".md"))
+					builders[group] = pkg.NewModelBuilder(model, tocOptionValue != "", templateOptionValue, output, builtinTemplates)
+				}
+				err = builders[group].Add(crd)
 				if err != nil {
 					return err
 				}
 			}
 
-			err = builder.OutputSplittedByGroups()
+			for _, builder := range builders {
+				builder.Output()
+			}
+
 			if err != nil {
 				return err
 			}
