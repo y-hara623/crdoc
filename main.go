@@ -58,11 +58,6 @@ func RootCmd() *cobra.Command {
 			resourcesOptionValue := viper.GetString(resourcesOption)
 			tocOptionValue := viper.GetString(tocOption)
 
-			model, err := pkg.LoadModel(tocOptionValue)
-			if err != nil {
-				return err
-			}
-
 			crds, err := pkg.LoadCRDs(resourcesOptionValue)
 			if err != nil {
 				return err
@@ -81,8 +76,11 @@ func RootCmd() *cobra.Command {
 			builders := make(map[string]*pkg.ModelBuilder)
 			for _, crd := range crds {
 				group := crd.Spec.Group
-				fmt.Print(group)
 				if builders[group] == nil {
+					model, err := pkg.LoadModel(tocOptionValue)
+					if err != nil {
+						return err
+					}
 					output := filepath.Clean(filepath.Join(outputOptionValue, strings.Replace(group, ".", "-", -1)+".md"))
 					builders[group] = pkg.NewModelBuilder(model, tocOptionValue != "", templateOptionValue, output, builtinTemplates)
 					fmt.Printf("Groups: %v\n", builders[group].Model.Groups)
