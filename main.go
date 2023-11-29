@@ -92,8 +92,9 @@ func RootCmd() *cobra.Command {
 				}
 			}
 
-			fmt.Printf("%v", builders)
 			for _, builder := range builders {
+				fmt.Printf("%v, length\n", builder.Model.Groups)
+				fmt.Printf("%v\n", len(builder.Model.Groups))
 				builder.Output()
 			}
 
