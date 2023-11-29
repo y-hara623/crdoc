@@ -100,7 +100,6 @@ func (b *ModelBuilder) Add(crd *apiextensions.CustomResourceDefinition) error {
 func (b *ModelBuilder) Output(group string) error {
 	outputFilepath := filepath.Clean(filepath.Join(b.OutputFilepath, strings.Replace(group, ".", "-", -1)+".md"))
 
-	os.MkdirAll(filepath.Dir(outputFilepath), 0755)
 	// create the directory
 	f, err := os.Create(outputFilepath)
 	if err != nil {
@@ -129,6 +128,41 @@ func (b *ModelBuilder) Output(group string) error {
 		Funcs(functions.ExportedMap).
 		ParseFS(templatesFs, pattern)).
 		Execute(f, *b.Model)
+}
+
+func (b *ModelBuilder) OutputSplittedByGroups() error {
+	for _, group := range b.Model.Groups {
+		outputFilepath := filepath.Clean(filepath.Join(b.OutputFilepath, strings.Replace(group.Group, ".", "-", -1)+".md"))
+		// create the directory
+		f, err := os.Create(outputFilepath)
+		if err != nil {
+			return err
+		}
+
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.Errorf("Error closing file: %s\n", err)
+			}
+		}()
+
+		// Values for embedded templates
+		templatesFs := b.builtinTemplates
+		pattern := "templates/**.tmpl"
+
+		dir, file := filepath.Split(b.TemplatesDirOrFile)
+		if dir != "" {
+			// Override to take extenal template
+			templatesFs = os.DirFS(dir)
+			pattern = "**.tmpl"
+		}
+
+		return template.Must(template.New(file).
+			Funcs(sprig.TxtFuncMap()).
+			Funcs(functions.ExportedMap).
+			ParseFS(templatesFs, pattern)).
+			Execute(f, *group)
+
+	}
 }
 
 func (b *ModelBuilder) addTypeModels(groupModel *GroupModel, kindModel *KindModel, name string, schema *apiextensions.JSONSchemaProps, isTopLevel bool) (string, *TypeModel) {
