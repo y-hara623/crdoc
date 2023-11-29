@@ -82,7 +82,7 @@ func RootCmd() *cobra.Command {
 			for _, crd := range crds {
 				group := crd.Spec.Group
 				if builders[group] == nil {
-					output := filepath.Clean(filepath.Join(b.OutputFilepath, strings.Replace(group, ".", "-", -1)+".md"))
+					output := filepath.Clean(filepath.Join(outputOptionValue, strings.Replace(group, ".", "-", -1)+".md"))
 					builders[group] = pkg.NewModelBuilder(model, tocOptionValue != "", templateOptionValue, output, builtinTemplates)
 				}
 				err = builders[group].Add(crd)
