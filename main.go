@@ -73,7 +73,9 @@ func RootCmd() *cobra.Command {
 				return err
 			}
 
-			for _, crd := range crds {
+			for index, crd := range crds {
+				fmt.Print(index)
+				fmt.Print(crd.Spec.Group)
 				builder := pkg.NewModelBuilder(model, tocOptionValue != "",
 					templateOptionValue, outputOptionValue, builtinTemplates)
 				err = builder.Add(crd)
