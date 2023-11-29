@@ -81,6 +81,7 @@ func RootCmd() *cobra.Command {
 			builders := make(map[string]*pkg.ModelBuilder)
 			for _, crd := range crds {
 				group := crd.Spec.Group
+				fmt.Print(group)
 				if builders[group] == nil {
 					output := filepath.Clean(filepath.Join(outputOptionValue, strings.Replace(group, ".", "-", -1)+".md"))
 					builders[group] = pkg.NewModelBuilder(model, tocOptionValue != "", templateOptionValue, output, builtinTemplates)
@@ -91,6 +92,7 @@ func RootCmd() *cobra.Command {
 				}
 			}
 
+			fmt.Printf("%v", builders)
 			for _, builder := range builders {
 				builder.Output()
 			}
