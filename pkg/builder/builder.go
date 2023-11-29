@@ -100,7 +100,7 @@ func (b *ModelBuilder) Add(crd *apiextensions.CustomResourceDefinition) error {
 func (b *ModelBuilder) Output() error {
 	outputFilepath := filepath.Clean(b.OutputFilepath)
 
-	fmt.Printf("%v", outputFilepath)
+	fmt.Printf("%v\n", outputFilepath)
 	// create dirs if needed
 	err := os.MkdirAll(filepath.Dir(outputFilepath), os.ModePerm)
 	if err != nil {
