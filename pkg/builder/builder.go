@@ -156,13 +156,16 @@ func (b *ModelBuilder) OutputSplittedByGroups() error {
 			pattern = "**.tmpl"
 		}
 
-		return template.Must(template.New(file).
+		err = template.Must(template.New(file).
 			Funcs(sprig.TxtFuncMap()).
 			Funcs(functions.ExportedMap).
 			ParseFS(templatesFs, pattern)).
 			Execute(f, *group)
-
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 func (b *ModelBuilder) addTypeModels(groupModel *GroupModel, kindModel *KindModel, name string, schema *apiextensions.JSONSchemaProps, isTopLevel bool) (string, *TypeModel) {
